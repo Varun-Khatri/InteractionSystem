@@ -5,7 +5,7 @@
     "description": "2D Interaction System",
     "unity": "2019.1",
     "dependencies": {
-        "com.vk.inputsystem": "https://github.com/Varun-Khatri/InputSystem.git#v1.0.0"
+        "com.vk.inputsystem": "https://github.com/Varun-Khatri/InputSystem.git#main"
     },
     "keywords": [
         "2D",
