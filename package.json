@@ -1,0 +1,26 @@
+{
+    "name": "com.vk.interaction",
+    "version": "1.0.0",
+    "displayName": "2D Interaction",
+    "description": "2D Interaction System",
+    "unity": "2019.1",
+    "dependencies": {
+        "com.vk.inputsystem": "1.0.0"
+    },
+    "keywords": [
+        "2D",
+        "interaction"
+    ],
+    "samples": [
+        {
+            "displayName": "Samples",
+            "description": "Sample scenes for demonstration purposes.",
+            "path": "Samples"
+        }
+    ],
+    "author": {
+        "name": "Varun Khatri",
+        "email": "varun.khatri18@gmail.com",
+        "url": ""
+    }
+}
