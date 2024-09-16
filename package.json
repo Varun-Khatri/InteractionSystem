@@ -1,8 +1,8 @@
 {
     "name": "com.vk.interaction",
     "version": "1.0.0",
-    "displayName": "2D Interaction",
-    "description": "2D Interaction System",
+    "displayName": "Interaction System",
+    "description": "Interaction System",
     "unity": "2019.1",
     "dependencies": {
         "com.vk.inputsystem": "1.0.0"
