@@ -1,7 +1,7 @@
 using UnityEngine;
 
 
-namespace VK.Interaction
+namespace VK.Interaction.Samples
 {
     public class InteractableObject : BaseInteractable
     {

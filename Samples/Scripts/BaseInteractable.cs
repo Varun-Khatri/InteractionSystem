@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using VK.Input;
 
-namespace VK.Interaction
+namespace VK.Interaction.Samples
 {
     public class BaseInteractable : MonoBehaviour, IInteractable
     {
