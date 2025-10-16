@@ -60,12 +60,6 @@ After installation, access samples at Assets/Packages/[System Name]/Samples/
 - **`BaseInteractable`** - Sample Abstract base class handling input and mouse detection
 - **`InteractableObject`** - Sample implementation showing basic usage
 
-## 📦 Installation
-
-1. Download or clone this repository
-2. Add the files to your Unity project (2019.4+ recommended)
-3. Ensure you have the Input System package installed (for the sample implementation)
-
 ## 🚀 Quick Start
 
 ### 1. Basic Implementation
@@ -305,4 +299,5 @@ This system is part of my professional portfolio. Feel free to:
 - Use in your personal or commercial projects
 - Extend with additional interaction types
 - Adapt for your specific game needs
+
 
