@@ -2,6 +2,47 @@
 
 A flexible and extensible interaction system for Unity games. Provides a clean interface for implementing various interactable objects with support for both instant and hold-based interactions.
 
+## 📦 Installation & Setup
+
+### Package Structure
+
+```text
+Assets/Packages/[Package Name]/
+├── Runtime/                 # Core system files
+│   ├── [MainSystemFiles].cs
+│   └── ...
+└── Samples/                 # Sample implementations
+    ├── ExampleComponent1.cs
+    ├── ExampleComponent2.cs
+    └── ExampleScene.unity   (if included)
+```
+
+### Installation Methods
+**Method 1: Unity Package Manager (Recommended)**
+
+- Open Window → Package Manager
+- Click + → Add package from git URL
+- Enter your repository URL:
+
+```text
+https://github.com/[username]/[repository-name].git
+The system will be installed in Assets/Packages/[System Name]/
+```
+
+**Method 2: Manual Installation**
+
+- Download the repository or clone it
+- Copy the entire package folder to:
+
+```text
+Assets/Packages/[System Name]/
+The system is ready to use
+```
+
+### Accessing Samples
+
+After installation, access samples at Assets/Packages/[System Name]/Samples/
+
 ## 🎯 Features
 
 - **Interface-Based Design** - Clean `IInteractable` interface for easy implementation
@@ -264,3 +305,4 @@ This system is part of my professional portfolio. Feel free to:
 - Use in your personal or commercial projects
 - Extend with additional interaction types
 - Adapt for your specific game needs
+
