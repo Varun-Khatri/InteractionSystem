@@ -11,9 +11,20 @@ namespace VK.Interaction.Samples
         [SerializeField] protected LayerMask _interactionMask;
         protected Coroutine _holdCoroutine;
 
-        private bool _isHighlighted = true;  // To track if the object is currently highlighted
+        private bool _isHighlighted = true; // To track if the object is currently highlighted
 
-        private void OnEnable()
+        protected virtual void Start()
+        {
+            _holdCoroutine = null;
+            UpdateHighlight();
+        }
+
+        protected virtual void Update()
+        {
+            UpdateHighlight();
+        }
+
+        protected virtual void OnEnable()
         {
             if (_inputHandler != null)
             {
@@ -22,7 +33,7 @@ namespace VK.Interaction.Samples
             }
         }
 
-        private void OnDisable()
+        protected virtual void OnDisable()
         {
             if (_inputHandler != null)
             {
@@ -30,11 +41,7 @@ namespace VK.Interaction.Samples
                 _inputHandler.OnInteractReleased -= TryEndInteraction;
             }
         }
-        private void Start()
-        {
-            _holdCoroutine = null;
-            UpdateHighlight();
-        }
+
         public virtual void OnHighlight()
         {
         }
@@ -42,32 +49,23 @@ namespace VK.Interaction.Samples
         public virtual void OnInteractStart()
         {
             // Prevent starting interaction twice
-            if (_holdCoroutine == null && IsMouseOverInteractable())
-            {
-                _holdCoroutine = StartCoroutine(OnInteractHold());
-            }
+            if (_holdCoroutine == null && IsMouseOverInteractable()) _holdCoroutine = StartCoroutine(OnInteractHold());
         }
 
         public virtual IEnumerator OnInteractHold()
         {
-            while (IsMouseOverInteractable())
-            {
-
-                yield return null;
-            }
+            while (IsMouseOverInteractable()) yield return null;
             // Automatically stop interaction if the mouse moves away
             TryEndInteraction();
         }
 
         public virtual void OnInteractEnd()
         {
-
             if (_holdCoroutine != null)
             {
                 StopCoroutine(_holdCoroutine);
                 _holdCoroutine = null;
             }
-
         }
 
         public virtual void OnUnhighlight()
@@ -77,40 +75,27 @@ namespace VK.Interaction.Samples
         private bool IsMouseOverInteractable()
         {
             Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
-            RaycastHit2D hit = Physics2D.Raycast(mousePosition, Vector2.zero, Mathf.Infinity, _interactionMask);
+            var hit = Physics2D.Raycast(mousePosition, Vector2.zero, Mathf.Infinity, _interactionMask);
 
-            if (hit.collider != null)
-            {
-                return hit.collider.gameObject == gameObject;
-            }
+            if (hit.collider != null) return hit.collider.gameObject == gameObject;
 
             return false;
         }
 
         private void TryStartInteraction()
         {
-            if (IsMouseOverInteractable())
-            {
-                OnInteractStart();
-            }
+            if (IsMouseOverInteractable()) OnInteractStart();
         }
 
         private void TryEndInteraction()
         {
-            if (_holdCoroutine != null)  // Only end interaction if it was started
-            {
+            if (_holdCoroutine != null) // Only end interaction if it was started
                 OnInteractEnd();
-            }
-        }
-
-        protected virtual void Update()
-        {
-            UpdateHighlight();
         }
 
         private void UpdateHighlight()
         {
-            bool isCurrentlyHighlighted = IsMouseOverInteractable();
+            var isCurrentlyHighlighted = IsMouseOverInteractable();
 
             // Only call OnHighlight or OnUnhighlight if the highlight state changes
             if (isCurrentlyHighlighted && !_isHighlighted)
@@ -124,6 +109,5 @@ namespace VK.Interaction.Samples
                 _isHighlighted = false;
             }
         }
-
     }
 }
