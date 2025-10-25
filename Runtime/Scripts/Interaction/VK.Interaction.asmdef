@@ -1,7 +1,10 @@
 {
     "name": "VK.Interaction",
     "rootNamespace": "VK.Interaction",
-    "references": [],
+    "references": [
+        "GUID:174a4feeb9c39fd428b13e0fdef7a6fc",
+        "GUID:75469ad4d38634e559750d17036d5f7c"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
