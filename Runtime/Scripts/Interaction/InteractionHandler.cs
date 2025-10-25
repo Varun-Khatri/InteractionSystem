@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using VK.Input;
@@ -9,7 +10,7 @@ namespace VK.Interaction
     {
         [SerializeField] private InputHandler _inputHandler;
         [SerializeField] private LayerMask _interactionMask;
-        [SerializeField] private float _interactionRange = 2f;
+        [SerializeField] private float _defaultInteractionRange = 2f; // Fallback range
 
         private IInteractable _activeInteractable; // Currently being interacted with
         private IInteractable _currentInteractable; // Currently highlighted
@@ -56,8 +57,22 @@ namespace VK.Interaction
         // Visualize interaction range in Scene view
         private void OnDrawGizmosSelected()
         {
+            // Draw default range
             Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(transform.position, _interactionRange);
+            Gizmos.DrawWireSphere(transform.position, _defaultInteractionRange);
+
+            // Draw ranges for all interactables in scene
+            var interactables = FindObjectsOfType<MonoBehaviour>().OfType<IInteractable>();
+            foreach (var interactable in interactables)
+            {
+                var mono = interactable as MonoBehaviour;
+                if (mono != null)
+                {
+                    var range = GetInteractableRange(interactable);
+                    Gizmos.color = Color.cyan;
+                    Gizmos.DrawWireSphere(mono.transform.position, range);
+                }
+            }
         }
 
         private void UpdateCurrentInteractable()
@@ -83,7 +98,8 @@ namespace VK.Interaction
                 if (_currentInteractable != null && IsInteractableInRange(_currentInteractable))
                 {
                     _currentInteractable.OnHighlight();
-                    Debug.Log($"Highlighted: {_currentInteractable}");
+                    Debug.Log(
+                        $"Highlighted: {_currentInteractable} (Range: {GetInteractableRange(_currentInteractable)})");
                 }
                 else if (_currentInteractable != null)
                 {
@@ -118,6 +134,11 @@ namespace VK.Interaction
             return null;
         }
 
+        private float GetInteractableRange(IInteractable interactable)
+        {
+            return interactable.InteractionRange > 0 ? interactable.InteractionRange : _defaultInteractionRange;
+        }
+
         private bool IsInteractableInRange(IInteractable interactable)
         {
             if (interactable == null) return false;
@@ -128,9 +149,10 @@ namespace VK.Interaction
 
             // Calculate distance from player to interactable
             var distance = Vector2.Distance(transform.position, interactableMono.transform.position);
-            var inRange = distance <= _interactionRange;
+            var requiredRange = GetInteractableRange(interactable);
+            var inRange = distance <= requiredRange;
 
-            Debug.Log($"Distance to {interactable}: {distance:F2} / {_interactionRange} - In Range: {inRange}");
+            Debug.Log($"Distance to {interactable}: {distance:F2} / {requiredRange} - In Range: {inRange}");
             return inRange;
         }
 
@@ -155,7 +177,7 @@ namespace VK.Interaction
             // Start the hold coroutine
             _holdCoroutine = StartCoroutine(HandleInteractionHold());
 
-            Debug.Log($"Started interaction with {interactable}");
+            Debug.Log($"Started interaction with {interactable} (Range: {GetInteractableRange(interactable)})");
         }
 
         private void TryEndInteraction()

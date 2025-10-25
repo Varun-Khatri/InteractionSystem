@@ -5,12 +5,16 @@ namespace VK.Interaction.Samples
 {
     public class BaseInteractable : MonoBehaviour, IInteractable
     {
-        // No coroutines, no state management - just pure interaction logic
+        [Header("Interaction Settings")] [SerializeField]
+        private float _interactionRange = 2f;
+
+        // IInteractable implementation
+        public float InteractionRange => _interactionRange;
 
         public virtual void OnHighlight()
         {
             // Visual feedback
-            Debug.Log($"{gameObject.name} highlighted");
+            Debug.Log($"{gameObject.name} highlighted (Range: {InteractionRange})");
         }
 
         public virtual void OnInteractStart()
@@ -27,9 +31,6 @@ namespace VK.Interaction.Samples
 
             // Yield return null to be called again next frame
             yield return null;
-
-            // Or you can yield for specific time
-            // yield return new WaitForSeconds(0.1f);
         }
 
         public virtual void OnInteractEnd()

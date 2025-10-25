@@ -5,6 +5,11 @@ namespace VK.Interaction
     public interface IInteractable
     {
         /// <summary>
+        ///     The range within which the player can interact with this object
+        /// </summary>
+        float InteractionRange { get; }
+
+        /// <summary>
         ///     Called when the player starts interacting with the object.
         /// </summary>
         void OnInteractStart();
