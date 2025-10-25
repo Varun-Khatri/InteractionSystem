@@ -5,31 +5,37 @@ namespace VK.Interaction.Samples
 {
     public class BaseInteractable : MonoBehaviour, IInteractable
     {
-        // No more input handling here! Just interaction logic.
+        // No coroutines, no state management - just pure interaction logic
 
         public virtual void OnHighlight()
         {
-            // Visual feedback (change color, show outline, etc.)
+            // Visual feedback
             Debug.Log($"{gameObject.name} highlighted");
         }
 
         public virtual void OnInteractStart()
         {
-            // Start interaction logic
-            Debug.Log($"{gameObject.name} interaction started");
+            // One-time interaction start logic
+            Debug.Log($"{gameObject.name} interaction STARTED");
         }
 
         public virtual IEnumerator OnInteractHold()
         {
-            // Hold interaction logic - called every frame while interacting
-            Debug.Log($"{gameObject.name} holding interaction");
-            yield return null; // Continue next frame
+            // This is called repeatedly while holding
+            // Put continuous interaction logic here
+            Debug.Log($"{gameObject.name} holding...");
+
+            // Yield return null to be called again next frame
+            yield return null;
+
+            // Or you can yield for specific time
+            // yield return new WaitForSeconds(0.1f);
         }
 
         public virtual void OnInteractEnd()
         {
-            // End interaction logic
-            Debug.Log($"{gameObject.name} interaction ended");
+            // Cleanup logic
+            Debug.Log($"{gameObject.name} interaction ENDED");
         }
 
         public virtual void OnUnhighlight()

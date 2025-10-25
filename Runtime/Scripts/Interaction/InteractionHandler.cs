@@ -10,9 +10,11 @@ namespace VK.Interaction
         [SerializeField] private InputHandler _inputHandler;
         [SerializeField] private LayerMask _interactionMask;
         [SerializeField] private float _interactionRange = 2f;
+        private IInteractable _activeInteractable; // Currently being interacted with
 
         private IInteractable _currentInteractable;
         private Coroutine _holdCoroutine;
+        private bool _isInteracting;
         private Camera _mainCamera;
 
         private void Start()
@@ -48,16 +50,14 @@ namespace VK.Interaction
                 _inputHandler.OnInteractReleased -= TryEndInteraction;
             }
 
-            // Clean up any ongoing interaction
-            if (_holdCoroutine != null)
-            {
-                StopCoroutine(_holdCoroutine);
-                _holdCoroutine = null;
-            }
+            CleanupInteraction();
         }
 
         private void UpdateCurrentInteractable()
         {
+            // Don't change highlight during active interaction
+            if (_isInteracting) return;
+
             var newInteractable = FindInteractableAtMousePosition();
 
             // If interactable changed
@@ -83,8 +83,7 @@ namespace VK.Interaction
             if (hit.collider != null)
             {
                 // Check if the hit object has an IInteractable component
-                IInteractable interactable;
-                hit.collider.TryGetComponent(out interactable);
+                var interactable = hit.collider.GetComponent<IInteractable>();
                 if (interactable != null)
                 {
                     // Optional: Check if within interaction range
@@ -98,34 +97,87 @@ namespace VK.Interaction
 
         private void TryStartInteraction()
         {
-            if (_currentInteractable != null && _holdCoroutine == null)
-            {
-                _currentInteractable.OnInteractStart();
-                _holdCoroutine = StartCoroutine(HandleInteractionHold());
-            }
+            // Only start if we have a valid interactable and not already interacting
+            if (_currentInteractable != null && !_isInteracting) StartInteraction(_currentInteractable);
+        }
+
+        private void StartInteraction(IInteractable interactable)
+        {
+            _isInteracting = true;
+            _activeInteractable = interactable;
+
+            // Start the interaction
+            interactable.OnInteractStart();
+
+            // Start the hold coroutine
+            _holdCoroutine = StartCoroutine(HandleInteractionHold());
+
+            Debug.Log($"Started interaction with {interactable}");
         }
 
         private void TryEndInteraction()
+        {
+            // Only end if we're currently interacting
+            if (_isInteracting) EndInteraction();
+        }
+
+        private void EndInteraction()
         {
             if (_holdCoroutine != null)
             {
                 StopCoroutine(_holdCoroutine);
                 _holdCoroutine = null;
-
-                if (_currentInteractable != null) _currentInteractable.OnInteractEnd();
             }
+
+            if (_activeInteractable != null)
+            {
+                _activeInteractable.OnInteractEnd();
+                Debug.Log($"Ended interaction with {_activeInteractable}");
+            }
+
+            _isInteracting = false;
+            _activeInteractable = null;
+        }
+
+        private void CleanupInteraction()
+        {
+            if (_holdCoroutine != null)
+            {
+                StopCoroutine(_holdCoroutine);
+                _holdCoroutine = null;
+            }
+
+            // If we were interacting during disable, end it properly
+            if (_isInteracting && _activeInteractable != null) _activeInteractable.OnInteractEnd();
+
+            _isInteracting = false;
+            _activeInteractable = null;
         }
 
         private IEnumerator HandleInteractionHold()
         {
-            while (_currentInteractable != null)
+            while (_isInteracting && _activeInteractable != null)
             {
-                yield return _currentInteractable.OnInteractHold();
-                yield return null; // Wait one frame between hold calls
+                // Call the interactable's hold method and wait for it to complete
+                yield return _activeInteractable.OnInteractHold();
+
+                // Check if we're still over the same interactable
+                if (!IsInteractableStillValid())
+                {
+                    EndInteraction();
+                    yield break;
+                }
             }
 
-            // If we get here, the interactable became null during hold
-            TryEndInteraction();
+            // If we exit the loop, end the interaction
+            EndInteraction();
+        }
+
+        private bool IsInteractableStillValid()
+        {
+            // Check if the active interactable is still the current one and valid
+            return _activeInteractable != null &&
+                   _activeInteractable == _currentInteractable;
         }
     }
 }
