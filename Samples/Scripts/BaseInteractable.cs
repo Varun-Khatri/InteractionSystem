@@ -8,7 +8,6 @@ namespace VK.Interaction.Samples
     public class BaseInteractable : MonoBehaviour, IInteractable
     {
         [SerializeField] protected InputHandler _inputHandler;
-        [SerializeField] protected Camera _camera;
         [SerializeField] protected LayerMask _interactionMask;
         protected Coroutine _holdCoroutine;
 
