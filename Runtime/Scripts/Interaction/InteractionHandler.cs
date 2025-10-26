@@ -86,33 +86,22 @@ namespace VK.Interaction
             if (newInteractable != _currentInteractable)
             {
                 // Unhighlight previous
-                if (_currentInteractable != null)
-                {
-                    _currentInteractable.OnUnhighlight();
-                    Debug.Log($"Unhighlighted: {_currentInteractable}");
-                }
+                if (_currentInteractable != null) _currentInteractable.OnUnhighlight();
 
                 _currentInteractable = newInteractable;
 
                 // Highlight new if it's in range
                 if (_currentInteractable != null && IsInteractableInRange(_currentInteractable))
-                {
                     _currentInteractable.OnHighlight();
-                    Debug.Log(
-                        $"Highlighted: {_currentInteractable} (Range: {GetInteractableRange(_currentInteractable)})");
-                }
                 else if (_currentInteractable != null)
-                {
                     // If out of range, don't highlight and clear the reference
                     _currentInteractable = null;
-                }
             }
 
             // Check if current interactable went out of range
             if (_currentInteractable != null && !IsInteractableInRange(_currentInteractable))
             {
                 _currentInteractable.OnUnhighlight();
-                Debug.Log($"Out of range - Unhighlighted: {_currentInteractable}");
                 _currentInteractable = null;
             }
         }
@@ -152,7 +141,6 @@ namespace VK.Interaction
             var requiredRange = GetInteractableRange(interactable);
             var inRange = distance <= requiredRange;
 
-            Debug.Log($"Distance to {interactable}: {distance:F2} / {requiredRange} - In Range: {inRange}");
             return inRange;
         }
 
@@ -161,9 +149,6 @@ namespace VK.Interaction
             // Only start if we have a valid interactable, not already interacting, and in range
             if (_currentInteractable != null && !_isInteracting && IsInteractableInRange(_currentInteractable))
                 StartInteraction(_currentInteractable);
-            else
-                Debug.Log(
-                    $"Cannot start interaction - Interactable: {_currentInteractable != null}, Interacting: {_isInteracting}, In Range: {_currentInteractable != null && IsInteractableInRange(_currentInteractable)}");
         }
 
         private void StartInteraction(IInteractable interactable)
@@ -176,8 +161,6 @@ namespace VK.Interaction
 
             // Start the hold coroutine
             _holdCoroutine = StartCoroutine(HandleInteractionHold());
-
-            Debug.Log($"Started interaction with {interactable} (Range: {GetInteractableRange(interactable)})");
         }
 
         private void TryEndInteraction()
@@ -194,11 +177,7 @@ namespace VK.Interaction
                 _holdCoroutine = null;
             }
 
-            if (_activeInteractable != null)
-            {
-                _activeInteractable.OnInteractEnd();
-                Debug.Log($"Ended interaction with {_activeInteractable}");
-            }
+            if (_activeInteractable != null) _activeInteractable.OnInteractEnd();
 
             _isInteracting = false;
             _activeInteractable = null;
@@ -213,11 +192,7 @@ namespace VK.Interaction
             }
 
             // If we were interacting during disable, end it properly
-            if (_isInteracting && _activeInteractable != null)
-            {
-                _activeInteractable.OnInteractEnd();
-                Debug.Log($"Cleanup - Ended interaction with {_activeInteractable}");
-            }
+            if (_isInteracting && _activeInteractable != null) _activeInteractable.OnInteractEnd();
 
             _isInteracting = false;
             _activeInteractable = null;
@@ -237,7 +212,6 @@ namespace VK.Interaction
                 // Check if still in range during hold
                 if (!IsInteractableInRange(_activeInteractable))
                 {
-                    Debug.Log("Interactable moved out of range during hold - Ending interaction");
                     EndInteraction();
                     yield break;
                 }
